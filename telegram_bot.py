@@ -5,6 +5,8 @@ import subprocess
 import telebot
 import time
 import yaml
+import requests
+import os
 
 class sensors:
 	def __init__(self, cmdout):
@@ -25,12 +27,23 @@ def load_config(config_file):
 config = load_config('config.yml')
 bot = telebot.TeleBot(config['bot']['token'])
 proxy = '%s://%s:%s@%s:%s' % (config['bot']['proxy']['protocol'],
-							config['bot']['proxy']['username'],
-							config['bot']['proxy']['password'],
-							config['bot']['proxy']['host'],
-							config['bot']['proxy']['port'])
+							  config['bot']['proxy']['username'],
+							  config['bot']['proxy']['password'],
+							  config['bot']['proxy']['host'],
+							  config['bot']['proxy']['port'])
 telebot.apihelper.proxy = { 'https':proxy}
 
+@bot.message_handler(commands=['parking'])
+def handlegetsrvinfo(message):
+	url = 'http://%s:%s@%s/stream/snapshot.jpg' % (config['parking_camera']['username'],
+												   config['parking_camera']['password'],
+												   config['parking_camera']['ip'])
+	filename = url.split('/')[-1]
+	r = requests.get(url, allow_redirects=True)
+	open(filename, 'wb').write(r.content)
+	bot.send_photo(message.chat.id, open(filename, 'rb'))
+	if os.path.exists(filename):
+		os.remove(filename)
 
 @bot.message_handler(commands=['getsrvtemp'])
 def handlegetsrvinfo(message):
@@ -42,7 +55,7 @@ def handlegetsrvinfo(message):
 
 @bot.message_handler(content_types="text")
 def handler_text(message):
-    bot.send_message(message.from_user.id, 'Just_test')
+    bot.send_message(message.from_user.id, 'Just_text')
 
 while True:
 	try:
