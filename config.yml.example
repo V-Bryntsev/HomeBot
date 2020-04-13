@@ -1,0 +1,8 @@
+bot:
+    token: 'MyTelegramTokenFromBotFather'
+    proxy:
+        protocol: socks5
+        username: ProxyUser
+        password: ProxyUserPass
+        host: 8.8.8.8
+        port: 443
