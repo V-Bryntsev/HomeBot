@@ -36,7 +36,7 @@ telebot.apihelper.proxy = { 'https':proxy}
 def handlegetsrvinfo(message):
 	p = subprocess.Popen(["ipmitool" ,"sdr"], stdout=subprocess.PIPE)
 	out = p.communicate()[0]
-	sens = Sensors(out)
+	sens = sensors(out)
 	answer = 'System Temp = %s \nCPU Temp = %s' % (sens.values['System Temp'], sens.values['CPU Temp'])
 	bot.send_message(message.chat.id,answer,parse_mode= "HTML")
 
