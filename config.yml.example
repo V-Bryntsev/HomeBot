@@ -7,6 +7,7 @@ bot:
         host: 8.8.8.8
         port: 443
 parking_camera:
-    ip: '8.8.8.8'
+    ip: 8.8.8.8
+    port: 80
     username: CameraUser
     password: CameraUserPass # in my case in base64

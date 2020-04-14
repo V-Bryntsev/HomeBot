@@ -35,13 +35,17 @@ telebot.apihelper.proxy = { 'https':proxy}
 
 @bot.message_handler(commands=['parking'])
 def handlegetsrvinfo(message):
-	url = 'http://%s:%s@%s/stream/snapshot.jpg' % (config['parking_camera']['username'],
-												   config['parking_camera']['password'],
-												   config['parking_camera']['ip'])
+	url = 'http://%s:%s@%s:%s/stream/snapshot.jpg' % (config['parking_camera']['username'],
+												      config['parking_camera']['password'],
+												      config['parking_camera']['ip'],
+												      config['parking_camera']['port'])
 	filename = url.split('/')[-1]
-	r = requests.get(url, allow_redirects=True)
-	open(filename, 'wb').write(r.content)
-	bot.send_photo(message.chat.id, open(filename, 'rb'))
+	if (os.system("ping -c 5 " + config['parking_camera']['ip']) is 0) :
+		r = requests.get(url, allow_redirects=True)
+		open(filename, 'wb').write(r.content)
+		bot.send_photo(message.chat.id, open(filename, 'rb'))
+	else:
+		bot.send_message(message.from_user.id, 'Camera is not available')
 	if os.path.exists(filename):
 		os.remove(filename)
 
