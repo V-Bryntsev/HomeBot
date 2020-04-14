@@ -11,3 +11,6 @@ parking_camera:
     port: 80
     username: CameraUser
     password: CameraUserPass # in my case in base64
+transponder:
+    email: 'mail@mail.ru'
+    password: 'MailPassword'

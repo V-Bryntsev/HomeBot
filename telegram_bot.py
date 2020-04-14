@@ -7,6 +7,7 @@ import time
 import yaml
 import requests
 import os
+from bs4 import BeautifulSoup
 
 class sensors:
 	def __init__(self, cmdout):
@@ -32,6 +33,22 @@ proxy = '%s://%s:%s@%s:%s' % (config['bot']['proxy']['protocol'],
 							  config['bot']['proxy']['host'],
 							  config['bot']['proxy']['port'])
 telebot.apihelper.proxy = { 'https':proxy}
+
+@bot.message_handler(commands=['transponder'])
+def transponderinfo(message):
+	url = 'https://avtodor-tr.ru/account/login'
+	user_agent_val = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+	session = requests.Session()
+	r = session.get(url, headers = {'User-Agent': user_agent_val})
+	post_request = session.post(url, {
+		'email': config['transponder']['email'],
+		'password':config['transponder']['password'],
+		'submit0': 'Подождите...', # ¯\_(ツ)_/¯
+	})
+	contents = post_request.text
+	soup = BeautifulSoup(contents, 'lxml')
+	s = soup.find("div", id="balans").find("span").text.split('.')[0]
+	bot.send_message(message.from_user.id, s+' руб')
 
 @bot.message_handler(commands=['parking'])
 def handlegetsrvinfo(message):
