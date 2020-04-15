@@ -8,6 +8,16 @@ import yaml
 import requests
 import os
 from bs4 import BeautifulSoup
+from functools import wraps
+
+def auth_decorator(a_func):
+    @wraps(a_func)
+    def wrapTheFunction(msg):
+        if msg.chat.id in config['auth']:
+            a_func(msg)
+        else:
+            bot.send_message(msg.chat.id,'Forbidden. If you want get access, write to @%s. Your id: ' % config['author'] + str(msg.from_user.id))
+    return wrapTheFunction
 
 class sensors:
     def __init__(self, cmdout):
@@ -35,6 +45,7 @@ proxy = '%s://%s:%s@%s:%s' % (config['bot']['proxy']['protocol'],
 telebot.apihelper.proxy = { 'https':proxy}
 
 @bot.message_handler(commands=['transponder'])
+@auth_decorator
 def transponderinfo(message):
     url = 'https://avtodor-tr.ru/account/login'
     user_agent_val = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
@@ -51,6 +62,7 @@ def transponderinfo(message):
     bot.send_message(message.from_user.id, s+' руб')
 
 @bot.message_handler(commands=['parking'])
+@auth_decorator
 def handlegetsrvinfo(message):
     url = 'http://%s:%s@%s:%s/stream/snapshot.jpg' % (config['parking_camera']['username'],
                                                       config['parking_camera']['password'],
@@ -67,6 +79,7 @@ def handlegetsrvinfo(message):
         os.remove(filename)
 
 @bot.message_handler(commands=['getsrvtemp'])
+@auth_decorator
 def handlegetsrvinfo(message):
     p = subprocess.Popen(["ipmitool" ,"sdr"], stdout=subprocess.PIPE)
     out = p.communicate()[0]
@@ -76,7 +89,7 @@ def handlegetsrvinfo(message):
 
 @bot.message_handler(content_types="text")
 def handler_text(message):
-    bot.send_message(message.from_user.id, 'Just_text')
+    bot.send_message(message.from_user.id, 'Just_text. Your id: ' + str(message.from_user.id))
 
 while True:
     try:

@@ -1,3 +1,7 @@
+author: "AdminAdmin" # Telegram username for communication with bot admin
+auth:
+    - 123456789 # telegram id`s with access to bot commands
+    - 987654321
 bot:
     token: 'MyTelegramTokenFromBotFather'
     proxy:
