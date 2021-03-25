@@ -1,5 +1,5 @@
 pyTelegramBotAPI==3.6.7
-PyYAML==5.3.1
+PyYAML==5.4
 PySocks==1.7.1
 mjpeg-tools==0.0.13
 requests==2.23.0
